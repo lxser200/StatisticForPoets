@@ -7,7 +7,7 @@
 
 ```bash
 git clone https://github.com/lxser200/StatisticForPoets
-cd StatisticForStihiruAndProzaRu
+cd StatisticForPoets
 pip install -r requirements.txt
 ```
 
