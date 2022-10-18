@@ -6,7 +6,7 @@
 ## Установка
 
 ```bash
-git clone https://github.com/lxser200/StatisticForStihiruAndProzaRu
+git clone https://github.com/lxser200/StatisticForPoets
 cd StatisticForStihiruAndProzaRu
 pip install -r requirements.txt
 ```
