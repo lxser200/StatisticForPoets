@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ## Использование
 
 ```bash
-cd StatisticForStihiruAndProzaRu
+cd StatisticForPoets
 python main.py
 
 # Введите логин на стихи.ру (введите 0 для пропуска): 
