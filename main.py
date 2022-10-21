@@ -3,8 +3,8 @@ import stihirustats as st
 
 
 def main(st_login, pr_login):
-    st.print_all_stats(st_login)
-    pr.print_all_stats(pr_login)
+    st.print_all_stats(st_login.lower())
+    pr.print_all_stats(pr_login.lower())
 
 
 if __name__ == '__main__':
