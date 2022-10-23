@@ -183,14 +183,6 @@ def get_list_of_elected(login):
     return mydata
 
 
-# def main():
-#     get_list_of_elected('2007vk')
-#
-#
-# if __name__ == '__main__':
-#     main()
-
-
 def print_all_stats(login: str):
     if login == '0':
         pass

@@ -17,11 +17,11 @@ HEADERS: dict[str, str] = {
 def get_homepage_statistic(login: str):
     """Получаем статистику со страницы автора"""
     url = f'{URL}/avtor/{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     # Получаем заголовок
-    name = 'Статистика по профилю на проза.ру: ' + soup.find('h1').text
+    name = 'Статистика по профилю на проза.ру: ' + soup.find('h1')
 
     # Ищем нужный нам блок
     block = soup.find('p', style="margin-left:20px")
@@ -40,25 +40,25 @@ def get_homepage_statistic(login: str):
 
 def check_poems(block) -> str:
     """Возвращает количество произведений, ищет в html блоке(block)"""
-    poems_count = block.find('b').text
+    poems_count = block.find('b')
     return f'Произведений: {poems_count}'
 
 
 def check_received_reviews(block) -> str:
     """Возвращает количество полученных рецензий, ищет в html блоке(block)"""
-    received_reviews = block.find_all('b')[1].text
+    received_reviews = block.find_all('b')[1]
     return f'Получено рецензий: {received_reviews}'
 
 
 def check_given_reviews(block) -> str:
     """Возвращает количество написанных рецензий, ищет в html блоке(block)"""
-    given_reviews = block.find_all('b')[2].text
+    given_reviews = block.find_all('b')[2]
     return f'Написано рецензий: {given_reviews}'
 
 
 def check_number_of_readers(block) -> str:
     """Возвращает количество читателей, ищет в html блоке(block)"""
-    number_of_readers = block.find_all('b')[3].text
+    number_of_readers = block.find_all('b')[3]
     return f'Читателей: {number_of_readers}'
 
 
@@ -70,8 +70,8 @@ def homepage_statistic_formatter(name, poems, r_reviews, g_reviews, readers):
 def get_last_given_review(login: str):
     """Получаем последнюю рецензию, которую получил автор(login)"""
     url = f'{URL}/rec_author.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     # Ищем нужный блок
     block = soup.find('div', class_="recproza").text
@@ -92,24 +92,24 @@ def check_and_display_number_of_reads(block):
         index = 1
     except:
         index = 2
-    result = block.find_all('p')[index].text
+    result = block.find_all('p')[index]
     if result == 'В данном списке отображаются все прочтения за последние две недели.' \
                  ' Счетчик на авторской странице учитывает уникальных читателей:' \
                  ' один и тот же читатель может прочитать несколько произведений автора,' \
                  ' но счетчиком читателей он будет учтен один раз. Неизвестные читатели –' \
                  ' это пользователи интернета, не зарегистрированные на портале Проза.ру.':
-        return block.find_all('p')[0].text
+        return block.find_all('p')[0]
     return result
 
 
 def get_last_received_review(login: str):
     """Получаем последнюю рецензию, которую написал автор(login)"""
     url = f'{URL}/rec_writer.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     # Ищем нужный блок
-    block = soup.find('div', class_="recproza").text
+    block = soup.find('div', class_="recproza")
 
     # Выводим на экран
     return last_received_review_formatter(block)
@@ -124,8 +124,8 @@ def last_received_review_formatter(block):
 def how_many_readers_today(login: str):
     """Получаем строку с данными о новых читателях за сегодняшний день"""
     url = f'{URL}/readers.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
     # Ищем нужный блок
     block = soup.find('index')
     return check_and_display_number_of_reads(block)
@@ -135,24 +135,24 @@ def how_many_readers_today(login: str):
 def get_last_reader(login: str) -> str:
     """Узнать последнего читателя"""
     url = f'{URL}/readers.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('div', class_='margins')  # Ищем нужную информацию
     block = block.find_all('tr')
 
-    result = block[1].text.strip().split('\n')  # Используем первую строку, форматируем ее
+    result = block[1].strip().split('\n')  # Используем первую строку, форматируем ее
     return f'Последний читатель:\nЧитатель: {result[0].title()}\nПроизведение: {result[1]}\n' \
            f'Дата: {result[2]}\nВремя: {result[3]}\nИсточник: {result[4].title()}'
 
 
 def get_elected(login: str):
     url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('table')
-    result = block.find_all('tr')[1].find_all('td')[4].get_text()
+    result = block.find_all('tr')[1].find_all('td')[4]
 
     return f'В избранных у {result} авторов/автора\n' \
            f'{get_list_of_elected(login)}'
