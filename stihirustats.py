@@ -148,8 +148,8 @@ def get_last_reader(login: str) -> str:
 
 def get_elected(login: str):
     url = f'http://stat.stihira-proza.ru/?portal=stihi&login={login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('table')
     result = block.find_all('tr')[1].find_all('td')[4].get_text()
@@ -158,11 +158,7 @@ def get_elected(login: str):
            f'{get_list_of_elected(login)}'
 
 
-def get_list_of_elected(login):
-    url = f'http://stat.stihira-proza.ru/?portal=stihi&login={login}'
-    response = requests.get(url=url, headers=HEADERS)
-
-    soup = BeautifulSoup(response.text, 'lxml')
+def get_list_of_elected(soup):
     table = soup.find('table', id='MainContent_gridStatFollowers')
 
     headers = []
