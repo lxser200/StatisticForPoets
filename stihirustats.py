@@ -7,10 +7,12 @@ from bs4 import BeautifulSoup
 
 URL = 'https://stihi.ru'
 HEADERS = {
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
-              "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
+    "accept":
+    "text/html,application/xhtml+xml,application/xml;q=0.9,"
+    "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
 }
 
 
@@ -35,7 +37,8 @@ def get_homepage_statistic(login: str):
     # Читателей:
     number_of_readers = check_number_of_readers(block)
     # Вывод статистики
-    return homepage_statistic_formatter(name, poems, received_reviews, given_reviews, number_of_readers)
+    return homepage_statistic_formatter(name, poems, received_reviews,
+                                        given_reviews, number_of_readers)
 
 
 def check_poems(block) -> str:
@@ -141,7 +144,8 @@ def get_last_reader(login: str) -> str:
     block = soup.find('div', class_='margins')  # Ищем нужную информацию
     block = block.find_all('tr')
 
-    result = block[1].text.strip().split('\n')  # Используем первую строку, форматируем ее
+    result = block[1].text.strip().split(
+        '\n')  # Используем первую строку, форматируем ее
     return f'Последний читатель:\nЧитатель: {result[0].title()}\nПроизведение: {result[1]}\n' \
            f'Дата: {result[2]}\nВремя: {result[3]}\nИсточник: {result[4].title()}'  # Fix-Me
 
@@ -195,4 +199,6 @@ def print_all_stats(login: str):
         print('--------------------')
         print(get_last_reader(login))
         print('--------------------')
-        print(get_elected(login), '\n')  # '\n' чтобы не было соединения со статистикой модуля 'prozarustats.py'
+        print(
+            get_elected(login), '\n'
+        )  # '\n' чтобы не было соединения со статистикой модуля 'prozarustats.py'
