@@ -178,6 +178,8 @@ def get_list_of_elected(login):
         row = [i.text for i in row_data]
         length = len(mydata)
         mydata.loc[length] = row
+    # Export to csv
+    # mydata.to_csv('prozaru_elected.csv', index=False)
     return mydata
 
 
