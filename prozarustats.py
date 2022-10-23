@@ -1,7 +1,9 @@
+import re
+
+import colorama
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import re
-import colorama
 
 URL = 'https://proza.ru/'
 HEADERS: dict[str, str] = {
@@ -152,7 +154,31 @@ def get_elected(login: str):
     block = soup.find('table')
     result = block.find_all('tr')[1].find_all('td')[4].get_text()
 
-    return f'В избранных у {result} авторов/автора'
+    return f'В избранных у {result} авторов/автора\n' \
+           f'{get_list_of_elected(login)}'
+
+
+def get_list_of_elected(login):
+    url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
+    response = requests.get(url=url, headers=HEADERS)
+
+    soup = BeautifulSoup(response.text, 'lxml')
+    table = soup.find('table', id='MainContent_gridStatFollowers')
+    # Получаем заголовки таблицы
+    headers = []
+    for i in table.find_all('th'):
+        title = i.text
+        headers.append(title)
+
+    # Создание дата фрейма
+    mydata = pd.DataFrame(columns=headers)
+    # Заполнение дата фрейма
+    for j in table.find_all('tr')[1:]:  # Индекс[0] - заголовок, поэтому берем [1], получаем строки
+        row_data = j.find_all('td')  # Получаем объекты из строк
+        row = [i.text for i in row_data]
+        length = len(mydata)
+        mydata.loc[length] = row
+    return mydata
 
 
 def print_all_stats(login: str):
