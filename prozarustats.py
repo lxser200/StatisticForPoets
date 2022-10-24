@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 URL = 'https://proza.ru/'
 HEADERS: dict[str, str] = {
     "accept":
-    "text/html,application/xhtml+xml,application/xml;q=0.9,"
-    "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,"
+        "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
     "user-agent":
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
 }
 
 
@@ -177,7 +177,7 @@ def get_list_of_elected(soup):
     mydata = pd.DataFrame(columns=headers)
     # Заполнение дата фрейма
     for j in table.find_all('tr')[
-            1:]:  # Индекс[0] - заголовок, поэтому берем [1], получаем строки
+             1:]:  # Индекс[0] - заголовок, поэтому берем [1], получаем строки
         row_data = j.find_all('td')  # Получаем объекты из строк
         row = [i.text for i in row_data]
         length = len(mydata)
