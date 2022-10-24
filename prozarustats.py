@@ -152,8 +152,8 @@ def get_last_reader(login: str) -> str:
 
 def get_elected(login: str):
     url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('table')
     result = block.find_all('tr')[1].find_all('td')[4].get_text()

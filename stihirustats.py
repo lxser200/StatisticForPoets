@@ -71,7 +71,7 @@ def homepage_statistic_formatter(name, poems, r_reviews, g_reviews, readers):
 
 
 def get_last_given_review(login: str):
-    """Получаем последнюю рецензию, которую получил автор(login)"""
+    """Получить последнюю рецензию, которую получил автор(login)"""
     url = f'{URL}/rec_author.html?{login}'
     response = requests.get(url=url, headers=HEADERS).text
     soup = BeautifulSoup(response, 'lxml')
@@ -84,6 +84,7 @@ def get_last_given_review(login: str):
 
 
 def last_review_formatter(block):
+    """Форматировать get_last_review"""
     last_review = re.sub('Заявить о нарушении', '', block.replace('', ''))
     last_review = last_review.strip()
     return f'Последняя полученная рецензия:\n{last_review}'
@@ -159,7 +160,7 @@ def get_elected(login: str):
     result = block.find_all('tr')[1].find_all('td')[4].get_text()
 
     return f'В избранных у {result} авторов/автора:\n' \
-           f'{get_list_of_elected(login)}'
+           f'{get_list_of_elected(soup)}'
 
 
 def get_list_of_elected(soup):
@@ -199,6 +200,4 @@ def print_all_stats(login: str):
         print('--------------------')
         print(get_last_reader(login))
         print('--------------------')
-        print(
-            get_elected(login), '\n'
-        )  # '\n' чтобы не было соединения со статистикой модуля 'prozarustats.py'
+        print(get_elected(login) + '\n')  # '\n' чтобы не было соединения со статистикой модуля 'prozarustats.py'
