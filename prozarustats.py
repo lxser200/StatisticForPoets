@@ -19,8 +19,8 @@ HEADERS: dict[str, str] = {
 def get_homepage_statistic(login: str):
     """Получаем статистику со страницы автора"""
     url = f'{URL}/avtor/{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     # Получаем заголовок
     name = 'Статистика по профилю на проза.ру: ' + soup.find('h1').text
@@ -152,7 +152,10 @@ def get_last_reader(login: str) -> str:
 
 def get_elected(login: str):
     url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
-    response = requests.get(url=url, headers=HEADERS)
+    try:
+        response = requests.get(url=url, headers=HEADERS, timeout=8)
+    except:
+        return 'Не удалось получить ответ от сервера...'
     soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('table')

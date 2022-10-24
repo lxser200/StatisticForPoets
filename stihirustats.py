@@ -4,6 +4,7 @@ import colorama
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 URL = 'https://stihi.ru'
 HEADERS = {
@@ -19,7 +20,7 @@ HEADERS = {
 def get_homepage_statistic(login: str):
     """Получаем статистику со страницы автора"""
     url = f'{URL}/avtor/{login}'
-    response = requests.get(url=url, headers=HEADERS).text
+    response = requests.get(url=url, headers=HEADERS, timeout=3).text
     soup = BeautifulSoup(response, 'lxml')
 
     # Получаем заголовок
@@ -73,7 +74,7 @@ def homepage_statistic_formatter(name, poems, r_reviews, g_reviews, readers):
 def get_last_given_review(login: str):
     """Получить последнюю рецензию, которую получил автор(login)"""
     url = f'{URL}/rec_author.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
+    response = requests.get(url=url, headers=HEADERS, timeout=3).text
     soup = BeautifulSoup(response, 'lxml')
 
     # Ищем нужный блок
@@ -93,7 +94,7 @@ def last_review_formatter(block):
 def get_last_received_review(login: str):
     """Получаем последнюю рецензию, которую написал автор(login)"""
     url = f'{URL}/rec_writer.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
+    response = requests.get(url=url, headers=HEADERS, timeout=3).text
     soup = BeautifulSoup(response, 'lxml')
 
     # Ищем нужный блок
@@ -128,7 +129,7 @@ def last_received_review_formatter(block):
 def how_many_readers_today(login: str):
     """Получаем строку с данными о новых читателях за сегодняшний день"""
     url = f'{URL}/readers.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
+    response = requests.get(url=url, headers=HEADERS, timeout=3).text
     soup = BeautifulSoup(response, 'lxml')
     # Ищем нужный блок
     block = soup.find('index')
@@ -139,8 +140,8 @@ def how_many_readers_today(login: str):
 def get_last_reader(login: str) -> str:
     """Узнать последнего читателя"""
     url = f'{URL}/readers.html?{login}'
-    response = requests.get(url=url, headers=HEADERS).text
-    soup = BeautifulSoup(response, 'lxml')
+    response = requests.get(url=url, headers=HEADERS, timeout=3)
+    soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('div', class_='margins')  # Ищем нужную информацию
     block = block.find_all('tr')
@@ -153,7 +154,10 @@ def get_last_reader(login: str) -> str:
 
 def get_elected(login: str):
     url = f'http://stat.stihira-proza.ru/?portal=stihi&login={login}'
-    response = requests.get(url=url, headers=HEADERS)
+    try:
+        response = requests.get(url=url, headers=HEADERS, timeout=8)
+    except:
+        return 'Не удалось получить ответ от сервера...'
     soup = BeautifulSoup(response.text, 'lxml')
 
     block = soup.find('table')
