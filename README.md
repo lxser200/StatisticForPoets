@@ -3,6 +3,9 @@
 
 Инструмент написан на python. Предназначен для удобного сбора и вывода статистики по профилям авторов на stihi.ru и proza.ru в консоль.
 
+# Демонстрация работы
+![](https://github.com/lxser200/StatisticForPoets/blob/main/mp4output.gif)
+
 ## Установка
 
 ```bash
