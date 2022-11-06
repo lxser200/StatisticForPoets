@@ -4,9 +4,11 @@ import colorama
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import datetime
+import os.path
 
 URL = 'https://proza.ru/'
-HEADERS: dict[str, str] = {
+HEADERS = {
     "accept":
         "text/html,application/xhtml+xml,application/xml;q=0.9,"
         "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -151,40 +153,45 @@ def get_last_reader(login: str) -> str:
 
 
 def get_elected(login: str):
-    url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
-    try:
-        response = requests.get(url=url, headers=HEADERS, timeout=8)
-    except:
-        return 'Не удалось получить ответ от сервера...'
-    soup = BeautifulSoup(response.text, 'lxml')
+    if datetime.datetime.now().strftime('%A') == 'Tuesday' or os.path.isfile(f'{login}_prozaru_elected.csv') is False:
+        url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
+        try:
+            response = requests.get(url=url, headers=HEADERS, timeout=16)
+        except:
+            return 'Не удалось получить ответ от сервера...'
+        soup = BeautifulSoup(response.text, 'lxml')
 
-    block = soup.find('table')
-    result = block.find_all('tr')[1].find_all('td')[4].get_text()
+        block = soup.find('table')
+        result = block.find_all('tr')[1].find_all('td')[4].get_text()
 
-    return f'В избранных у {result} авторов/автора\n' \
-           f'{get_list_of_elected(soup)}'
+        return f'В избранных у {result} авторов/автора\n' \
+               f'{get_list_of_elected(soup, login)}'
+    else:
+        return f'В избранных у следующих авторов:\n' \
+               f'{get_list_of_elected(None, login)}'
 
 
-def get_list_of_elected(soup):
-    table = soup.find('table', id='MainContent_gridStatFollowers')
-    # Получаем заголовки таблицы
-    headers = []
-    for i in table.find_all('th'):
-        title = i.text
-        headers.append(title)
+def get_list_of_elected(soup, login):
+    #  Вторник - обновление баз данных, проверяем сегодняшнюю дату или отсутствие файла с таблицей.
+    if datetime.datetime.now().strftime('%A') == 'Tuesday' or os.path.isfile(f'{login}_prozaru_elected.csv') is False:
+        table = soup.find('table', id='MainContent_gridStatFollowers')
+        headers = []
+        for i in table.find_all('th'):
+            title = i.text
+            headers.append(title)
 
-    # Создание дата фрейма
-    mydata = pd.DataFrame(columns=headers)
-    # Заполнение дата фрейма
-    for j in table.find_all('tr')[
-             1:]:  # Индекс[0] - заголовок, поэтому берем [1], получаем строки
-        row_data = j.find_all('td')  # Получаем объекты из строк
-        row = [i.text for i in row_data]
-        length = len(mydata)
-        mydata.loc[length] = row
-    # Export to csv
-    # mydata.to_csv('prozaru_elected.csv', index=False)
-    return mydata
+        mydata = pd.DataFrame(columns=headers)  # Создание Дата-фрейма
+        # Заполнение фрейма
+        for j in table.find_all('tr')[1:]:
+            row_data = j.find_all('td')
+            row = [i.text for i in row_data]
+            length = len(mydata)
+            mydata.loc[length] = row
+            # Export to csv
+            mydata.to_csv(f'{login}_prozaru_elected.csv', index=False)
+        return pd.read_csv(f'{login}_prozaru_elected.csv')
+    else:
+        return pd.read_csv(f'{login}_prozaru_elected.csv')
 
 
 def print_all_stats(login: str):
