@@ -17,6 +17,8 @@ HEADERS = {
         "(KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
 }
 
+unix_data_now = datetime.datetime.now().timestamp()
+
 
 def get_homepage_statistic(login: str):
     """Получаем статистику со страницы автора"""
@@ -153,7 +155,7 @@ def get_last_reader(login: str) -> str:
 
 
 def get_elected(login: str):
-    if datetime.datetime.now().strftime('%A') == 'Tuesday' or os.path.isfile(f'{login}_prozaru_elected.csv') is False:
+    if os.path.isfile(f'{login}_prozaru_elected.csv') is False:
         url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
         try:
             response = requests.get(url=url, headers=HEADERS, timeout=16)
@@ -166,14 +168,33 @@ def get_elected(login: str):
 
         return f'В избранных у {result} авторов/автора\n' \
                f'{get_list_of_elected(soup, login)}'
-    else:
-        return f'В избранных у следующих авторов:\n' \
-               f'{get_list_of_elected(None, login)}'
+
+    elif os.path.isfile(f'{login}_prozaru_elected.csv') is True:
+
+        if (os.path.getctime(f'{login}_prozaru_elected.csv') + 691200) >= unix_data_now:
+            return f'В избранных у следующих авторов:\n' \
+                   f'{get_list_of_elected(None, login)}'
+
+        else:
+            os.remove(f'{login}_prozaru_elected.csv')
+            url = f'http://stat.stihira-proza.ru/?portal=proza&login={login}'
+
+            try:
+                response = requests.get(url=url, headers=HEADERS, timeout=16)
+            except:
+                return 'Не удалось получить ответ от сервера...'
+
+            soup = BeautifulSoup(response.text, 'lxml')
+
+            block = soup.find('table')
+            result = block.find_all('tr')[1].find_all('td')[4].get_text()
+
+            return f'В избранных у {result} авторов/автора:\n' \
+                   f'{get_list_of_elected(soup, login)}'
 
 
 def get_list_of_elected(soup, login):
-    #  Вторник - обновление баз данных, проверяем сегодняшнюю дату или отсутствие файла с таблицей.
-    if datetime.datetime.now().strftime('%A') == 'Tuesday' or os.path.isfile(f'{login}_prozaru_elected.csv') is False:
+    if soup is not None:
         table = soup.find('table', id='MainContent_gridStatFollowers')
         headers = []
         for i in table.find_all('th'):
@@ -190,6 +211,7 @@ def get_list_of_elected(soup, login):
             # Export to csv
             mydata.to_csv(f'{login}_prozaru_elected.csv', index=False)
         return pd.read_csv(f'{login}_prozaru_elected.csv')
+
     else:
         return pd.read_csv(f'{login}_prozaru_elected.csv')
 
